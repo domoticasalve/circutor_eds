@@ -6,7 +6,8 @@
         "description": "Introduce la IP del dispositivo y el ID del medidor.",
         "data": {
           "host": "Direccion IP",
-          "device_id": "ID del dispositivo (ej: CVM-A)"
+          "device_id": "ID del dispositivo (ej: CVM-A)",
+          "device_name": "Nombre del dispositivo (ej: Cuadro Principal)"
         }
       }
     },

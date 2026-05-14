@@ -4,6 +4,7 @@ DOMAIN = "circutor_eds"
 DEFAULT_SCAN_INTERVAL = 30
 CONF_HOST = "host"
 CONF_DEVICE_ID = "device_id"
+CONF_DEVICE_NAME = "device_name"
 
 # (friendly_name, unit, device_class, state_class, icon)
 SENSOR_TYPES: dict[str, tuple] = {

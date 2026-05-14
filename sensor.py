@@ -9,7 +9,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, CONF_HOST, CONF_DEVICE_ID, SENSOR_TYPES
+from .const import DOMAIN, CONF_HOST, CONF_DEVICE_ID, CONF_DEVICE_NAME, SENSOR_TYPES
 from .coordinator import CiructorCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -22,13 +22,14 @@ async def async_setup_entry(
 ) -> None:
     coordinator: CiructorCoordinator = hass.data[DOMAIN][entry.entry_id]
     device_id = entry.data[CONF_DEVICE_ID]
+    device_name = entry.data.get(CONF_DEVICE_NAME, device_id)
     host = entry.data[CONF_HOST]
 
     entities = []
     for sensor_key, sensor_def in SENSOR_TYPES.items():
         if sensor_key in coordinator.data:
             entities.append(
-                CiructorSensor(coordinator, entry, sensor_key, sensor_def, device_id, host)
+                CiructorSensor(coordinator, entry, sensor_key, sensor_def, device_id, device_name, host)
             )
         else:
             _LOGGER.debug("Variable %s no encontrada en el XML, sensor omitido", sensor_key)
@@ -44,6 +45,7 @@ class CiructorSensor(CoordinatorEntity, SensorEntity):
         sensor_key: str,
         sensor_def: tuple,
         device_id: str,
+        device_name: str,
         host: str,
     ) -> None:
         super().__init__(coordinator)
@@ -52,14 +54,14 @@ class CiructorSensor(CoordinatorEntity, SensorEntity):
         self._sensor_key = sensor_key
         self._device_id = device_id
         self._attr_unique_id = f"{entry.entry_id}_{sensor_key}"
-        self._attr_name = f"{device_id} {friendly_name}"
+        self._attr_name = f"{device_name} {friendly_name}"
         self._attr_native_unit_of_measurement = unit
         self._attr_device_class = device_class
         self._attr_state_class = state_class
         self._attr_icon = icon
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
-            name=f"Medidor {device_id}",
+            name=f"Medidor {device_name}",
             manufacturer="Ciructor",
             model="CVM Energy Monitor",
             configuration_url=f"http://{host}",

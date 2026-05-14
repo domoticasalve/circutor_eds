@@ -9,7 +9,7 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 
-from .const import DOMAIN, CONF_HOST, CONF_DEVICE_ID
+from .const import DOMAIN, CONF_HOST, CONF_DEVICE_ID, CONF_DEVICE_NAME
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,6 +17,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_HOST): str,
         vol.Required(CONF_DEVICE_ID, default="CVM-A"): str,
+        vol.Required(CONF_DEVICE_NAME, default="CVM-A"): str,
     }
 )
 
@@ -41,6 +42,7 @@ class CiructorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             host = user_input[CONF_HOST].strip()
             device_id = user_input[CONF_DEVICE_ID].strip()
+            device_name = user_input[CONF_DEVICE_NAME].strip()
 
             unique_id = f"{host}_{device_id}"
             await self.async_set_unique_id(unique_id)
@@ -57,10 +59,11 @@ class CiructorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "unknown"
             else:
                 return self.async_create_entry(
-                    title=f"{device_id} ({host})",
+                    title=f"{device_name} ({host})",
                     data={
                         CONF_HOST: host,
                         CONF_DEVICE_ID: device_id,
+                        CONF_DEVICE_NAME: device_name,
                     },
                 )
 
