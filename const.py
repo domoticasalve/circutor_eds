@@ -120,7 +120,7 @@ SENSOR_TYPES: dict[str, tuple] = {
     "ARM3A2":      ("Armonico 3 corriente L2",      "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-ac"),
     "ARM3V1":      ("Armonico 3 tension L1",        "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
     "ARM3V2":      ("Armonico 3 tension L2",        "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
-    # --- Variables POWER METER ---
+    # --- Variables POWER METER / INVERSOR ---
     "COSFI":       ("Cos fi",                        None,     SensorDeviceClass.POWER_FACTOR,  SensorStateClass.MEASUREMENT,      "mdi:sine-wave"),
     "I1":          ("Corriente L1",                  "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-ac"),
     "I2":          ("Corriente L2",                  "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-ac"),
@@ -139,4 +139,15 @@ SENSOR_TYPES: dict[str, tuple] = {
     "VDTTM":       ("Fecha hora dato",               None,     None,                            None,                              "mdi:clock"),
     "NAME":        ("Nombre dispositivo",            None,     None,                            None,                              "mdi:tag"),
     "DESCRIPTION": ("Descripcion",                  None,     None,                            None,                              "mdi:information"),
+    # --- Variables exclusivas INVERSOR ---
+    "PE":          ("Potencia entrada DC",           "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:solar-power"),
+    "IE":          ("Eficiencia inversor",           "%",      None,                            SensorStateClass.MEASUREMENT,      "mdi:percent"),
+    "PV1I":        ("Corriente DC string 1",         "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-dc"),
+    "PV1V":        ("Tension DC string 1",           "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:solar-panel"),
+    "PV2I":        ("Corriente DC string 2",         "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-dc"),
+    "PV2V":        ("Tension DC string 2",           "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:solar-panel"),
+    "PV3I":        ("Corriente DC string 3",         "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-dc"),
+    "PV3V":        ("Tension DC string 3",           "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:solar-panel"),
+    "PV4I":        ("Corriente DC string 4",         "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-dc"),
+    "PV4V":        ("Tension DC string 4",           "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:solar-panel"),
 }
