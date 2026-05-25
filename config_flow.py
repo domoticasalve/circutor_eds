@@ -8,8 +8,21 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.selector import (
+    SelectSelector,
+    SelectSelectorConfig,
+    SelectSelectorMode,
+)
 
-from .const import DOMAIN, CONF_HOST, CONF_DEVICE_ID, CONF_DEVICE_NAME
+from .const import (
+    DOMAIN,
+    CONF_HOST,
+    CONF_DEVICE_ID,
+    CONF_DEVICE_NAME,
+    CONF_DEVICE_TYPE,
+    DEVICE_TYPE_CVM,
+    DEVICE_TYPES,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +31,14 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_HOST): str,
         vol.Required(CONF_DEVICE_ID, default="CVM-A"): str,
         vol.Required(CONF_DEVICE_NAME, default="CVM-A"): str,
+        vol.Required(CONF_DEVICE_TYPE, default=DEVICE_TYPE_CVM): SelectSelector(
+            SelectSelectorConfig(
+                options=[
+                    {"value": k, "label": v} for k, v in DEVICE_TYPES.items()
+                ],
+                mode=SelectSelectorMode.LIST,
+            )
+        ),
     }
 )
 
@@ -43,6 +64,7 @@ class CiructorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             host = user_input[CONF_HOST].strip()
             device_id = user_input[CONF_DEVICE_ID].strip()
             device_name = user_input[CONF_DEVICE_NAME].strip()
+            device_type = user_input[CONF_DEVICE_TYPE]
 
             unique_id = f"{host}_{device_id}"
             await self.async_set_unique_id(unique_id)
@@ -64,6 +86,7 @@ class CiructorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_HOST: host,
                         CONF_DEVICE_ID: device_id,
                         CONF_DEVICE_NAME: device_name,
+                        CONF_DEVICE_TYPE: device_type,
                     },
                 )
 

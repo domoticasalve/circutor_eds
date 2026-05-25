@@ -5,9 +5,48 @@ DEFAULT_SCAN_INTERVAL = 30
 CONF_HOST = "host"
 CONF_DEVICE_ID = "device_id"
 CONF_DEVICE_NAME = "device_name"
+CONF_DEVICE_TYPE = "device_type"
+
+DEVICE_TYPE_CVM = "cvm"
+DEVICE_TYPE_POWER_METER = "power_meter"
+DEVICE_TYPE_INVERSOR = "inversor"
+DEVICE_TYPE_SMART_LOGGER = "smart_logger"
+
+DEVICE_TYPES = {
+    DEVICE_TYPE_CVM:          "Circutor CVM",
+    DEVICE_TYPE_POWER_METER:  "Power Meter",
+    DEVICE_TYPE_INVERSOR:     "Inversor Huawei",
+    DEVICE_TYPE_SMART_LOGGER: "Smart Logger Huawei",
+}
 
 # (friendly_name, unit, device_class, state_class, icon)
-SENSOR_TYPES: dict[str, tuple] = {
+
+# ---------------------------------------------------------------------------
+# Variables compartidas por Power Meter, Inversor y Smart Logger
+# ---------------------------------------------------------------------------
+_SHARED = {
+    "COSFI":       ("Cos fi",                        None,     SensorDeviceClass.POWER_FACTOR,  SensorStateClass.MEASUREMENT,      "mdi:sine-wave"),
+    "I1":          ("Corriente L1",                  "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-ac"),
+    "I2":          ("Corriente L2",                  "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-ac"),
+    "I3":          ("Corriente L3",                  "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-ac"),
+    "PA":          ("Potencia activa",               "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:flash"),
+    "PR":          ("Potencia reactiva",             "kvar",   None,                            SensorStateClass.MEASUREMENT,      "mdi:flash"),
+    "V1":          ("Tension fase-neutro L1",        "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
+    "V2":          ("Tension fase-neutro L2",        "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
+    "V3":          ("Tension fase-neutro L3",        "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
+    "V12":         ("Tension fase-fase L12",         "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
+    "V23":         ("Tension fase-fase L23",         "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
+    "V31":         ("Tension fase-fase L31",         "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
+    "STATUS":      ("Estado",                        None,     None,                            None,                              "mdi:check-circle"),
+    "VDTTM":       ("Fecha hora dato",               None,     None,                            None,                              "mdi:clock"),
+    "NAME":        ("Nombre dispositivo",            None,     None,                            None,                              "mdi:tag"),
+    "DESCRIPTION": ("Descripcion",                   None,     None,                            None,                              "mdi:information"),
+}
+
+# ---------------------------------------------------------------------------
+# Circutor CVM
+# ---------------------------------------------------------------------------
+CVM_SENSOR_TYPES = {
     "AE":          ("Energia activa",              "kWh",    SensorDeviceClass.ENERGY,        SensorStateClass.TOTAL_INCREASING, "mdi:lightning-bolt"),
     "COSI":        ("Factor de potencia",           None,     SensorDeviceClass.POWER_FACTOR,  SensorStateClass.MEASUREMENT,      "mdi:sine-wave"),
     "API":         ("Potencia activa",              "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:flash"),
@@ -67,6 +106,7 @@ SENSOR_TYPES: dict[str, tuple] = {
     "COSI1":       ("Cos fi L1",                    None,     SensorDeviceClass.POWER_FACTOR,  SensorStateClass.MEASUREMENT,      "mdi:sine-wave"),
     "COSI2":       ("Cos fi L2",                    None,     SensorDeviceClass.POWER_FACTOR,  SensorStateClass.MEASUREMENT,      "mdi:sine-wave"),
     "COSI3":       ("Cos fi L3",                    None,     SensorDeviceClass.POWER_FACTOR,  SensorStateClass.MEASUREMENT,      "mdi:sine-wave"),
+    "COSFI":       ("Cos fi",                       None,     SensorDeviceClass.POWER_FACTOR,  SensorStateClass.MEASUREMENT,      "mdi:sine-wave"),
     "API1":        ("Potencia activa L1",           "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:flash"),
     "API2":        ("Potencia activa L2",           "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:flash"),
     "API3":        ("Potencia activa L3",           "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:flash"),
@@ -120,28 +160,25 @@ SENSOR_TYPES: dict[str, tuple] = {
     "ARM3A2":      ("Armonico 3 corriente L2",      "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-ac"),
     "ARM3V1":      ("Armonico 3 tension L1",        "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
     "ARM3V2":      ("Armonico 3 tension L2",        "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
-    # --- Variables POWER METER / INVERSOR ---
-    "COSFI":       ("Cos fi",                        None,     SensorDeviceClass.POWER_FACTOR,  SensorStateClass.MEASUREMENT,      "mdi:sine-wave"),
-    "I1":          ("Corriente L1",                  "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-ac"),
-    "I2":          ("Corriente L2",                  "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-ac"),
-    "I3":          ("Corriente L3",                  "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-ac"),
-    "PA":          ("Potencia activa",               "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:flash"),
-    "PR":          ("Potencia reactiva",             "kvar",   None,                            SensorStateClass.MEASUREMENT,      "mdi:flash"),
-    "V1":          ("Tension fase-neutro L1",        "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
-    "V2":          ("Tension fase-neutro L2",        "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
-    "V3":          ("Tension fase-neutro L3",        "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
-    "V12":         ("Tension fase-fase L12",         "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
-    "V23":         ("Tension fase-fase L23",         "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
-    "V31":         ("Tension fase-fase L31",         "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:flash"),
+}
+
+# ---------------------------------------------------------------------------
+# Power Meter
+# ---------------------------------------------------------------------------
+POWER_METER_SENSOR_TYPES = {
+    **_SHARED,
     "TAE":         ("Energia activa importada",      "kWh",    SensorDeviceClass.ENERGY,        SensorStateClass.TOTAL_INCREASING, "mdi:lightning-bolt"),
     "TAEN":        ("Energia activa exportada",      "kWh",    SensorDeviceClass.ENERGY,        SensorStateClass.TOTAL_INCREASING, "mdi:lightning-bolt"),
     "TAEP":        ("Energia activa total",          "kWh",    SensorDeviceClass.ENERGY,        SensorStateClass.TOTAL_INCREASING, "mdi:lightning-bolt"),
-    "VDTTM":       ("Fecha hora dato",               None,     None,                            None,                              "mdi:clock"),
-    "NAME":        ("Nombre dispositivo",            None,     None,                            None,                              "mdi:tag"),
-    "DESCRIPTION": ("Descripcion",                  None,     None,                            None,                              "mdi:information"),
-    # --- Variables exclusivas INVERSOR ---
-    "PE":          ("Potencia entrada DC",           "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:solar-power"),
+}
+
+# ---------------------------------------------------------------------------
+# Inversor Huawei  — "IE" aqui es Eficiencia (%), sin conflicto con CVM
+# ---------------------------------------------------------------------------
+INVERSOR_SENSOR_TYPES = {
+    **_SHARED,
     "IE":          ("Eficiencia inversor",           "%",      None,                            SensorStateClass.MEASUREMENT,      "mdi:percent"),
+    "PE":          ("Potencia entrada DC",           "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:solar-power"),
     "PV1I":        ("Corriente DC string 1",         "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-dc"),
     "PV1V":        ("Tension DC string 1",           "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:solar-panel"),
     "PV2I":        ("Corriente DC string 2",         "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-dc"),
@@ -150,10 +187,28 @@ SENSOR_TYPES: dict[str, tuple] = {
     "PV3V":        ("Tension DC string 3",           "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:solar-panel"),
     "PV4I":        ("Corriente DC string 4",         "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-dc"),
     "PV4V":        ("Tension DC string 4",           "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:solar-panel"),
-    # --- Variables exclusivas SMART-LOGGER ---
+}
+
+# ---------------------------------------------------------------------------
+# Smart Logger Huawei  — EDAY es MEASUREMENT porque se resetea cada dia
+# ---------------------------------------------------------------------------
+SMART_LOGGER_SENSOR_TYPES = {
+    **_SHARED,
+    "PA":          ("Potencia activa planta",        "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:solar-power"),
+    "PE":          ("Potencia entrada DC planta",    "kW",     SensorDeviceClass.POWER,         SensorStateClass.MEASUREMENT,      "mdi:solar-power"),
     "CCO2":        ("Factor emision CO2",            "kg/kWh", None,                            SensorStateClass.MEASUREMENT,      "mdi:molecule-co2"),
     "CO2":         ("CO2 evitado",                   "kg",     SensorDeviceClass.WEIGHT,        SensorStateClass.TOTAL_INCREASING, "mdi:molecule-co2"),
-    "EDAY":        ("Energia generada hoy",          "kWh",    SensorDeviceClass.ENERGY,        SensorStateClass.TOTAL_INCREASING, "mdi:solar-power"),
+    "EDAY":        ("Energia generada hoy",          "kWh",    SensorDeviceClass.ENERGY,        SensorStateClass.MEASUREMENT,      "mdi:solar-power"),
     "EI":          ("Eficiencia global sistema",     "%",      None,                            SensorStateClass.MEASUREMENT,      "mdi:percent"),
     "ET":          ("Energia total generada",        "kWh",    SensorDeviceClass.ENERGY,        SensorStateClass.TOTAL_INCREASING, "mdi:solar-power"),
+}
+
+# ---------------------------------------------------------------------------
+# Mapa global por tipo de dispositivo
+# ---------------------------------------------------------------------------
+SENSOR_TYPES_BY_DEVICE: dict[str, dict] = {
+    DEVICE_TYPE_CVM:          CVM_SENSOR_TYPES,
+    DEVICE_TYPE_POWER_METER:  POWER_METER_SENSOR_TYPES,
+    DEVICE_TYPE_INVERSOR:     INVERSOR_SENSOR_TYPES,
+    DEVICE_TYPE_SMART_LOGGER: SMART_LOGGER_SENSOR_TYPES,
 }
