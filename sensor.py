@@ -74,7 +74,7 @@ class CiructorSensor(CoordinatorEntity, SensorEntity):
         self._attr_icon = icon
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
-            name=f"Medidor {device_name}",
+            name=device_name,
             manufacturer="Circutor",
             model=DEVICE_TYPES.get(device_type, "Energy Monitor"),
             configuration_url=f"http://{host}",
