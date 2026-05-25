@@ -150,4 +150,10 @@ SENSOR_TYPES: dict[str, tuple] = {
     "PV3V":        ("Tension DC string 3",           "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:solar-panel"),
     "PV4I":        ("Corriente DC string 4",         "A",      SensorDeviceClass.CURRENT,       SensorStateClass.MEASUREMENT,      "mdi:current-dc"),
     "PV4V":        ("Tension DC string 4",           "V",      SensorDeviceClass.VOLTAGE,       SensorStateClass.MEASUREMENT,      "mdi:solar-panel"),
+    # --- Variables exclusivas SMART-LOGGER ---
+    "CCO2":        ("Factor emision CO2",            "kg/kWh", None,                            SensorStateClass.MEASUREMENT,      "mdi:molecule-co2"),
+    "CO2":         ("CO2 evitado",                   "kg",     SensorDeviceClass.WEIGHT,        SensorStateClass.TOTAL_INCREASING, "mdi:molecule-co2"),
+    "EDAY":        ("Energia generada hoy",          "kWh",    SensorDeviceClass.ENERGY,        SensorStateClass.TOTAL_INCREASING, "mdi:solar-power"),
+    "EI":          ("Eficiencia global sistema",     "%",      None,                            SensorStateClass.MEASUREMENT,      "mdi:percent"),
+    "ET":          ("Energia total generada",        "kWh",    SensorDeviceClass.ENERGY,        SensorStateClass.TOTAL_INCREASING, "mdi:solar-power"),
 }
